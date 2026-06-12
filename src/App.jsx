@@ -1,7 +1,6 @@
-import { useState, } from "react";
+import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import { supabase } from "./lib/supabase";
-
 function App() {
   const savedHistory =
     JSON.parse(localStorage.getItem("ai-history")) || [];
