@@ -7,9 +7,37 @@ function App() {
 
   const [business, setBusiness] = useState("");
   const [tool, setTool] = useState("caption");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState(savedHistory);
+
+  const signUp = async () => {
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Check your email");
+  }
+};
+
+const signIn = async () => {
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Logged in!");
+  }
+};
 
   const generateAI = async () => {
     if (!business) return;
@@ -135,15 +163,75 @@ Make the output modern and engaging.
           AI Content Workspace 🚀
         </h1>
 
-        <p
+        <div
           style={{
             color: "#94a3b8",
             marginBottom: "30px",
           }}
         >
-          Generate powerful marketing content using AI
-        </p>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              padding: "8px",
+              borderRadius: "6px",
+              border: "none",
+              background: "#0f172a",
+              color: "white",
+            }}
+          />
 
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              padding: "8px",
+              borderRadius: "6px",
+              border: "none",
+              background: "#0f172a",
+              color: "white",
+            }}
+          />
+
+          <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
+            <button
+              onClick={signUp}
+              style={{
+                padding: "10px 16px",
+                borderRadius: "10px",
+                border: "none",
+                background: "#7c3aed",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Sign Up
+            </button>
+            <button
+              onClick={signIn}
+              style={{
+                padding: "10px 16px",
+                borderRadius: "10px",
+                border: "none",
+                background: "#7c3aed",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Sign In
+            </button>
+          </div>
+
+          <p style={{ margin: 0 }}>Logged in user: Guest</p>
+        </div>
         <input
           type="text"
           placeholder="Enter your business..."
