@@ -9,6 +9,7 @@ function App() {
   const [tool, setTool] = useState("caption");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState(savedHistory);
@@ -26,6 +27,12 @@ function App() {
   }
 };
 
+const logout = async () => {
+  await supabase.auth.signOut();
+  setUser(null);
+  alert("Logged out!");
+};
+
 const signIn = async () => {
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -35,13 +42,22 @@ const signIn = async () => {
   if (error) {
     alert(error.message);
   } else {
-    alert("Logged in!");
+    const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+setUser(user);
+
+alert("Logged in!");
   }
 };
 
   const generateAI = async () => {
-    if (!business) return;
-    
+    if (!user) {
+      alert("Please log in first");
+      return;
+    }
+
     setLoading(true);
     setResult("");
 
@@ -111,6 +127,7 @@ Make the output modern and engaging.
           .from("captions")
           .insert([
             {
+              user_email: user.email,
               business: business,
               caption: aiResult,
             },
@@ -119,6 +136,8 @@ Make the output modern and engaging.
         console.log("SUPABASE RESULT:", supabaseData);
         console.log("SUPABASE ERROR:", supabaseError);
 
+        console.log("CURRENT USER:", user);
+        console.log("USER EMAIL:", user?.email);
         console.log("Saved!");
       } else {  
 
@@ -230,7 +249,23 @@ Make the output modern and engaging.
             </button>
           </div>
 
-          <p style={{ margin: 0 }}>Logged in user: Guest</p>
+          <p style={{ margin: 0 }}>
+  Logged in user: {user ? user.email : "Guest"}
+</p>
+{user && (
+  <button
+    onClick={logout}
+    style={{
+      marginTop: "10px",
+      padding: "8px 16px",
+      border: "none",
+      borderRadius: "8px",
+      cursor: "pointer",
+    }}
+  >
+    Logout
+  </button>
+)}
         </div>
         <input
           type="text"
